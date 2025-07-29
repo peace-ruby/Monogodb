@@ -9,9 +9,8 @@ app.use(express.urlencoded({ extended: true }));
 const bcrypt = require('bcrypt');
 const saltRound = 10;
 const uri = process.env.uri
-const userRoute = require("./routes/user.route")
-
-app.use("/user", userRoutes)
+const userRoutes = require("./routes/user.route");
+app.use("/user", userRoutes);
 
 // console.log(uri)
 const userSchema = new mongoose.Schema({
@@ -37,23 +36,23 @@ app.get('/', (request, response) => {
     response.send('Hello World!')
 })
 
-app.post('/login', async (request, response)=>{
-    const {email, password} =request.body;
+app.post('/login', async (request, response) => {
+    const { email, password } = request.body;
     try {
-        const user = await User.findOne({email});
-        if(!user){
-            return response.send('User not found')
+        const user = await User.findOne({ email });
+        if (!user) {
+            return response.status(404).send('User not found');
         }
-        const isMatch= await bcrypt.compare(password, user.password)
-        if(!isMatch){
-            return response.send('incorrect password')
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return response.status(401).send('Incorrect password');
         }
-        response.send('Login successful')
+        response.send('Login successful');
     } catch (error) {
-        console.error(error)
-        response.status(500).send('login error')
+        console.error(error);
+        response.status(500).send('Login error');
     }
-})
+});
 
 app.post('/signup', async (request, response) => {
     const { username, email, password } = request.body;
